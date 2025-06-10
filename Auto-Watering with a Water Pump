@@ -1,0 +1,21 @@
+int sensorPin = A0;
+int pumpPin = 7;
+
+void setup() {
+  pinMode(pumpPin, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  int moisture = analogRead(sensorPin);
+  Serial.print("Soil: ");
+  Serial.println(moisture);
+  
+  if (moisture < 400) { // Dry
+    digitalWrite(pumpPin, HIGH); // Turn pump ON
+  } else {
+    digitalWrite(pumpPin, LOW);  // Turn pump OFF
+  }
+
+  delay(2000);
+}
