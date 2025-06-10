@@ -1,0 +1,12 @@
+int sensorPin = A0;
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  int moisture = analogRead(sensorPin);
+  Serial.print("Soil Moisture: ");
+  Serial.println(moisture);
+  delay(1000);
+}
