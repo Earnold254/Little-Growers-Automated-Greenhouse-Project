@@ -1,0 +1,67 @@
+#include <DHT.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+// Define pins
+#define DHTPIN 2
+#define DHTTYPE DHT11
+#define SOIL_PIN A0
+#define LDR_PIN A1
+#define PUMP_PIN 7
+#define LED_PIN 13
+
+// Initialize sensors
+DHT dht(DHTPIN, DHTTYPE);
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Try 0x3F if 0x27 doesn't work
+
+void setup() {
+  Serial.begin(9600);
+  dht.begin();
+  lcd.init();
+  lcd.backlight();
+
+  pinMode(PUMP_PIN, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
+}
+
+void loop() {
+  // 🌡️ Read temp & humidity
+  float temp = dht.readTemperature();
+  float humid = dht.readHumidity();
+
+  // 💧 Read soil moisture
+  int soil = analogRead(SOIL_PIN);
+
+  // ☀️ Read light level
+  int lightLevel = analogRead(LDR_PIN);
+
+  // 🖥️ Display on LCD
+  lcd.setCursor(0, 0);
+  lcd.print("T:");
+  lcd.print(temp);
+  lcd.print("C H:");
+  lcd.print(humid);
+  lcd.print("%");
+
+  lcd.setCursor(0, 1);
+  lcd.print("Soil:");
+  lcd.print(soil);
+  lcd.print(" L:");
+  lcd.print(lightLevel);
+
+  // 🚿 Auto-Water
+  if (soil < 400) {
+    digitalWrite(PUMP_PIN, HIGH);
+  } else {
+    digitalWrite(PUMP_PIN, LOW);
+  }
+
+  // 💡 Turn on light if it's dark
+  if (lightLevel < 300) {
+    digitalWrite(LED_PIN, HIGH);
+  } else {
+    digitalWrite(LED_PIN, LOW);
+  }
+
+  delay(2000); // Wait 2 seconds
+}
